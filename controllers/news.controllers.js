@@ -1,9 +1,9 @@
 const { fetchTopics } = require("../models/news.models");
+const endpoints = require("../endpoints.json");
 
 exports.getTopics = (request, response, next) => {
   fetchTopics()
     .then((topics) => {
-      // console.log(topics, "<<<<<<<<<<<TOPICS IN CONTROLLER");
       response.status(200).send({ topics });
     })
     .catch((err) => {
@@ -12,5 +12,5 @@ exports.getTopics = (request, response, next) => {
 };
 
 exports.getEndpoints = (request, response) => {
-    response.status(200).send()
+  response.status(200).send(endpoints);
 };
