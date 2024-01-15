@@ -1,8 +1,8 @@
-const app = require("../app");
 const request = require("supertest");
-const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
+const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
+const app = require("../app");
 
 beforeEach(() => {
   return seed(data);
@@ -35,6 +35,20 @@ describe("GET- /api/topics", () => {
       .then(({ body }) => {
         const errorMessage = body.message;
         expect(errorMessage).toBe("Not Found: Invalid Path");
+      });
+  });
+});
+
+describe("GET /api", () => {
+  test("should respond with an object describing all available endpoints (and their methods) on the API", () => {
+    return request(app)
+      .get("/api")
+      .then(({ body }) => {
+        expect(Object.keys(body)).toEqual([
+          "GET /api",
+          "GET /api/topics",
+          "GET /api/articles",
+        ]);
       });
   });
 });
