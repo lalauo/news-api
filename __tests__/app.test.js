@@ -55,17 +55,18 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/3")
       .expect(200)
-      .then(({ body }) => {
-        console.log({body});
-        expect({body}).toHaveProperty("article_id");
-        expect({body}).toHaveProperty("title");
-        expect({body}).toHaveProperty("topic");
-        expect({body}).toHaveProperty("author");
-        expect({body}).toHaveProperty("{body}");
-        expect({body}).toHaveProperty("created_at");
-        expect({body}).toHaveProperty("votes");
-        expect({body}).toHaveProperty("article_img_url");
-      });
+      .then(({ body: {article} }) => {
+        expect(article).toEqual({
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
   });
   test("404- should respond with correct error message when given a valid but non-existent article id", () => {
     return request(app)
