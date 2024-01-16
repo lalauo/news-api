@@ -1,8 +1,9 @@
 const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
-const data = require("../db/data/test-data");
 const app = require("../app");
+const data = require("../db/data/test-data");
+const endpointDoc = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(data);
@@ -44,11 +45,41 @@ describe("GET /api", () => {
     return request(app)
       .get("/api")
       .then(({ body }) => {
-        expect(Object.keys(body)).toEqual([
-          "GET /api",
-          "GET /api/topics",
-          "GET /api/articles",
-        ]);
+        expect(Object.keys(body)).toEqual(Object.keys(endpointDoc));
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("200- should respond with an article object containing the correct properties", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveProperty("article_id");
+        expect(body).toHaveProperty("title");
+        expect(body).toHaveProperty("topic");
+        expect(body).toHaveProperty("author");
+        expect(body).toHaveProperty("body");
+        expect(body).toHaveProperty("created_at");
+        expect(body).toHaveProperty("votes");
+        expect(body).toHaveProperty("article_img_url");
+      });
+  });
+  test("404- should respond with correct error message when given a valid but non-existent article id", () => {
+    return request(app)
+      .get("/api/articles/30")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Not Found: Non-Existent Article ID");
+      });
+  });
+  test("400- should respond with correct error message when given an invalid article id", () => {
+    return request(app)
+      .get("/api/articles/article5")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request: Invalid Article ID");
       });
   });
 });
