@@ -41,11 +41,11 @@ describe("GET- /api/topics", () => {
 });
 
 describe("GET /api", () => {
-  test("should respond with an object describing all available endpoints (and their methods) on the API", () => {
+  test.only("should respond with an object describing all available endpoints (and their methods) on the API", () => {
     return request(app)
       .get("/api")
       .then(({ body }) => {
-        expect(Object.keys(body)).toEqual(Object.keys(endpointDoc));
+        expect(body.endpoints).toEqual(endpointDoc);
       });
   });
 });
@@ -56,14 +56,15 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/3")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toHaveProperty("article_id");
-        expect(body).toHaveProperty("title");
-        expect(body).toHaveProperty("topic");
-        expect(body).toHaveProperty("author");
-        expect(body).toHaveProperty("body");
-        expect(body).toHaveProperty("created_at");
-        expect(body).toHaveProperty("votes");
-        expect(body).toHaveProperty("article_img_url");
+        console.log({body});
+        expect({body}).toHaveProperty("article_id");
+        expect({body}).toHaveProperty("title");
+        expect({body}).toHaveProperty("topic");
+        expect({body}).toHaveProperty("author");
+        expect({body}).toHaveProperty("{body}");
+        expect({body}).toHaveProperty("created_at");
+        expect({body}).toHaveProperty("votes");
+        expect({body}).toHaveProperty("article_img_url");
       });
   });
   test("404- should respond with correct error message when given a valid but non-existent article id", () => {
@@ -83,3 +84,25 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("GET /api/articles", () => {
+  test("200- should respond with an articles array containing article objects, each with the correct properties", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body);
+      });
+  });
+});
+
+// const article= {
+//     article_id: 1,
+//     title: "Living in the shadow of a great man",
+//     topic: "mitch",
+//     author: "butter_bridge",
+//     created_at: "2020-07-09 21:11:00",
+//     votes: 100,
+//     article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+//     comment_count: 11
+//   }
