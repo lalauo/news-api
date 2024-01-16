@@ -3,6 +3,7 @@ const {
   getTopics,
   getEndpoints,
   getArticleById,
+  getAllArticles,
 } = require("./controllers/news.controllers");
 const {
   invalidPathHandler,
@@ -16,6 +17,7 @@ app.use(express.json());
 app.get("/api/topics", getTopics);
 app.get("/api", getEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
+app.get("/api/articles", getAllArticles);
 
 app.all("*", invalidPathHandler);
 
