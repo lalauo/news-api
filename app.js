@@ -4,6 +4,7 @@ const {
   getEndpoints,
   getArticleById,
   getArticles,
+  getCommentsByArticleId,
 } = require("./controllers/news.controllers");
 const {
   invalidPathHandler,
@@ -16,6 +17,7 @@ app.get("/api/topics", getTopics);
 app.get("/api", getEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getArticles);
+app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.all("*", invalidPathHandler);
 

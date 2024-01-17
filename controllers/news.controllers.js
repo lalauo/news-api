@@ -2,9 +2,9 @@ const {
   fetchTopics,
   fetchArticleById,
   fetchArticles,
+  fetchCommentsByArticleId,
 } = require("../models/news.models");
 const endpoints = require("../endpoints.json");
-const { response, request } = require("../app");
 
 exports.getTopics = (request, response, next) => {
   fetchTopics()
@@ -36,4 +36,16 @@ exports.getArticles = (request, response) => {
   fetchArticles().then((articles) => {
     response.status(200).send({ articles });
   });
+};
+
+exports.getCommentsByArticleId = (request, response, next) => {
+  const { article_id } = request.params;
+
+  fetchCommentsByArticleId(article_id)
+    .then((comments) => {
+      response.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
