@@ -1,4 +1,8 @@
-const { fetchTopics, fetchArticleById } = require("../models/news.models");
+const {
+  fetchTopics,
+  fetchArticleById,
+  fetchArticles,
+} = require("../models/news.models");
 const endpoints = require("../endpoints.json");
 const { response, request } = require("../app");
 
@@ -13,7 +17,7 @@ exports.getTopics = (request, response, next) => {
 };
 
 exports.getEndpoints = (request, response) => {
-  response.status(200).send({endpoints});
+  response.status(200).send({ endpoints });
 };
 
 exports.getArticleById = (request, response, next) => {
@@ -21,13 +25,15 @@ exports.getArticleById = (request, response, next) => {
 
   fetchArticleById(article_id)
     .then((article) => {
-      response.status(200).send({article});
+      response.status(200).send({ article });
     })
     .catch((err) => {
       next(err);
     });
 };
 
-exports.getAllArticles = (request, response) => {
-  response.status(200).send();
+exports.getArticles = (request, response) => {
+  fetchArticles().then((articles) => {
+    response.status(200).send({ articles });
+  });
 };

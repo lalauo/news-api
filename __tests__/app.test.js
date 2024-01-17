@@ -41,7 +41,7 @@ describe("GET- /api/topics", () => {
 });
 
 describe("GET /api", () => {
-  test.only("should respond with an object describing all available endpoints (and their methods) on the API", () => {
+  test("should respond with an object describing all available endpoints (and their methods) on the API", () => {
     return request(app)
       .get("/api")
       .then(({ body }) => {
@@ -55,7 +55,7 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/3")
       .expect(200)
-      .then(({ body: {article} }) => {
+      .then(({ body: { article } }) => {
         expect(article).toEqual({
           article_id: 3,
           title: "Eight pug gifs that remind me of mitch",
@@ -67,6 +67,7 @@ describe("GET /api/articles/:article_id", () => {
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         });
+      });
   });
   test("404- should respond with correct error message when given a valid but non-existent article id", () => {
     return request(app)
@@ -87,23 +88,52 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("GET /api/articles", () => {
-  test("200- should respond with an articles array containing article objects, each with the correct properties", () => {
+  test("200- should respond with an array of article objects, each with the correct properties", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then(({ body }) => {
-        console.log(body);
+      .then(({ body: { articles } }) => {
+        if (articles.length > 1) {
+          articles.forEach((article) => {
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("title");
+            expect(article).toHaveProperty("topic");
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("created_at");
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url");
+            expect(article).toHaveProperty("comment_count");
+          });
+        }
+      });
+  });
+  test("should return articles sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles[0]).toEqual({
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: "2",
+        });
+        expect(articles[articles.length - 1]).toEqual({
+          article_id: 7,
+          title: "Z",
+          topic: "mitch",
+          author: "icellusedkars",
+          created_at: "2020-01-07T14:08:00.000Z",
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: "0",
+        });
       });
   });
 });
-
-// const article= {
-//     article_id: 1,
-//     title: "Living in the shadow of a great man",
-//     topic: "mitch",
-//     author: "butter_bridge",
-//     created_at: "2020-07-09 21:11:00",
-//     votes: 100,
-//     article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-//     comment_count: 11
-//   }
