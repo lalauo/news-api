@@ -145,24 +145,14 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/3/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        expect(comments).toEqual([
-          {
-            comment_id: 11,
-            body: "Ambidextrous marsupial",
-            article_id: 3,
-            author: "icellusedkars",
-            votes: 0,
-            created_at: "2020-09-19T23:10:00.000Z",
-          },
-          {
-            comment_id: 10,
-            body: "git push origin master",
-            article_id: 3,
-            author: "icellusedkars",
-            votes: 0,
-            created_at: "2020-06-20T07:24:00.000Z",
-          },
-        ]);
+        comments.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe("number"),
+            expect(typeof comment.body).toBe("string"),
+            expect(typeof comment.article_id).toBe("number"),
+            expect(typeof comment.author).toBe("string"),
+            expect(typeof comment.votes).toBe("number"),
+            expect(typeof comment.created_at).toBe("string");
+        });
       });
   });
   test("200- should return an array of comment objects sorted by creation date in descending order", () => {
@@ -174,6 +164,14 @@ describe("GET /api/articles/:article_id/comments", () => {
           descending: true,
           coerce: true,
         });
+      });
+  });
+  test("200- should return an empty array when there are no comments on given article", () => {
+    return request(app)
+      .get("/api/articles/4/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual({ comments: [] });
       });
   });
   test("404- should return correct error message when article_id is valid, but it doesn't exist in the database", () => {

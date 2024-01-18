@@ -8,7 +8,7 @@ const {
   deleteCommentFromDB,
 } = require("../models/app.models");
 const endpoints = require("../endpoints.json");
-const { validateCommentId } = require("../db/seeds/utils");
+const { validateCommentId, checkArticleExists } = require("../db/seeds/utils");
 
 exports.getTopics = (request, response, next) => {
   fetchTopics()
@@ -45,9 +45,12 @@ exports.getArticles = (request, response) => {
 exports.getCommentsByArticleId = (request, response, next) => {
   const { article_id } = request.params;
 
-  fetchCommentsByArticleId(article_id)
-    .then((comments) => {
-      response.status(200).send({ comments });
+  const lookForArticleQuery = checkArticleExists(article_id);
+  const fetchCommentsQuery = fetchCommentsByArticleId(article_id);
+  Promise.all([fetchCommentsQuery, lookForArticleQuery])
+    .then((resArr) => {
+      const articleComments = resArr[0];
+      response.status(200).send({ "comments": articleComments });
     })
     .catch((err) => {
       next(err);
