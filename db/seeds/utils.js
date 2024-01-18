@@ -1,3 +1,5 @@
+const db = require("../connection");
+
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   if (!created_at) return { ...otherProperties };
   return { created_at: new Date(created_at), ...otherProperties };
@@ -19,4 +21,23 @@ exports.formatComments = (comments, idLookup) => {
       ...this.convertTimestampToDate(restOfComment),
     };
   });
+};
+
+exports.validateCommentId = (commentId) => {
+  if (isNaN(commentId)) {
+    return Promise.reject({
+      message: "Bad Request: Invalid Comment ID",
+      status: 400,
+    });
+  } else
+    return db
+      .query(`SELECT * FROM comments WHERE comment_id = $1;`, [commentId])
+      .then(({ rows }) => {
+        if (rows.length === 0) {
+          return Promise.reject({
+            message: "Not Found: Non-Existent Comment ID",
+            status: 404,
+          });
+        }
+      });
 };

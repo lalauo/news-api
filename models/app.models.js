@@ -74,3 +74,11 @@ exports.updateVotes = (inc_votes, articleId) => {
       return rows[0];
     });
 };
+
+exports.deleteCommentFromDB = (commentId) => {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1;`, [commentId])
+    .then(({ rows }) => {
+      return rows;
+    });
+};
