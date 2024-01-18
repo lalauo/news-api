@@ -8,6 +8,7 @@ const {
   postNewCommentToArticle,
   updateArticleById,
   deleteCommentById,
+  getUsers,
 } = require("./controllers/app.controllers");
 const {
   invalidPathHandler,
@@ -24,6 +25,7 @@ app.get("/api", getEndpoints);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+app.get("/api/users", getUsers);
 
 app.post("/api/articles/:article_id/comments", postNewCommentToArticle);
 

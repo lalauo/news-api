@@ -6,6 +6,7 @@ const {
   insertNewCommentToArticle,
   updateVotes,
   deleteCommentFromDB,
+  fetchUsers,
 } = require("../models/app.models");
 const endpoints = require("../endpoints.json");
 const { validateCommentId, checkArticleExists } = require("../db/seeds/utils");
@@ -50,7 +51,7 @@ exports.getCommentsByArticleId = (request, response, next) => {
   Promise.all([fetchCommentsQuery, lookForArticleQuery])
     .then((resArr) => {
       const articleComments = resArr[0];
-      response.status(200).send({ "comments": articleComments });
+      response.status(200).send({ comments: articleComments });
     })
     .catch((err) => {
       next(err);
@@ -93,6 +94,16 @@ exports.deleteCommentById = (request, response, next) => {
     .then((resArr) => {
       const noContent = resArr[0];
       response.status(204).send({ noContent });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsers = (request, response, next) => {
+  fetchUsers()
+    .then((users) => {
+      response.status(200).send({ users });
     })
     .catch((err) => {
       next(err);
