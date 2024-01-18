@@ -3,7 +3,8 @@ const {
   fetchArticleById,
   fetchArticles,
   fetchCommentsByArticleId,
-} = require("../models/news.models");
+  insertNewCommentToArticle,
+} = require("../models/app.models");
 const endpoints = require("../endpoints.json");
 
 exports.getTopics = (request, response, next) => {
@@ -44,6 +45,20 @@ exports.getCommentsByArticleId = (request, response, next) => {
   fetchCommentsByArticleId(article_id)
     .then((comments) => {
       response.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postNewCommentToArticle = (request, response, next) => {
+  insertNewCommentToArticle(
+    request.body.username,
+    request.body.body,
+    request.params.article_id
+  )
+    .then((comment) => {
+      response.status(201).send(comment);
     })
     .catch((err) => {
       next(err);
