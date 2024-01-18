@@ -17,7 +17,7 @@ describe("GET- /api/topics", () => {
   test("200- should respond with 200 status code", () => {
     return request(app).get("/api/topics").expect(200);
   });
-  test("should return an array of topic objects with the correct properties", () => {
+  test("200- should return an array of topic objects with the correct properties", () => {
     return request(app)
       .get("/api/topics")
       .then(({ body }) => {
@@ -41,9 +41,10 @@ describe("GET- /api/topics", () => {
 });
 
 describe("GET /api", () => {
-  test("should respond with an object describing all available endpoints (and their methods) on the API", () => {
+  test("200- should respond with an object describing all available endpoints (and their methods) on the API", () => {
     return request(app)
       .get("/api")
+      .expect(200)
       .then(({ body }) => {
         expect(body.endpoints).toEqual(endpointDoc);
       });
@@ -107,7 +108,7 @@ describe("GET /api/articles", () => {
         }
       });
   });
-  test("should return articles sorted by date in descending order", () => {
+  test("200- should return articles sorted by date in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -164,9 +165,10 @@ describe("GET /api/articles/:article_id/comments", () => {
         ]);
       });
   });
-  test("should return an array of comment objects sorted by creation date in descending order", () => {
+  test("200- should return an array of comment objects sorted by creation date in descending order", () => {
     return request(app)
       .get("/api/articles/3/comments")
+      .expect(200)
       .then(({ body: { comments } }) => {
         expect(comments).toBeSortedBy("created_at", {
           descending: true,
@@ -199,8 +201,8 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post(`/api/articles/7/comments`)
       .send(newComment)
       .expect(201)
-      .then(({ body }) => {
-        expect(body).toMatchObject({
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
           comment_id: 19,
           body: "Sing to me Paolo!",
           article_id: 7,
@@ -247,6 +249,69 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body: { message } }) => {
         expect(message).toBe("Not Found: Unmet Constraints");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("200- successfully INCREMENTS the votes on an article by a given inc_votes value", () => {
+    const voteUpdate = { inc_votes: 15 };
+    return request(app)
+      .patch("/api/articles/13")
+      .send(voteUpdate)
+      .expect(200)
+      .then(({ body: { updatedArticle } }) => {
+        expect(updatedArticle).toEqual({
+          article_id: 13,
+          title: "Another article about Mitch",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "There will never be enough articles about Mitch!",
+          created_at: "2020-10-11T11:24:00.000Z",
+          votes: 15,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("200- successfully DECREMENTS the votes on an article by a given inc_votes value", () => {
+    const voteUpdate = { inc_votes: -55 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteUpdate)
+      .expect(200)
+      .then(({ body: { updatedArticle } }) => {
+        expect(updatedArticle).toEqual({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 45,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("404- returns NOT FOUND where article_id isn't in database", () => {
+    const voteUpdate = { inc_votes: 7 };
+    return request(app)
+      .patch("/api/articles/59")
+      .send(voteUpdate)
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Not Found: Non-Existent Article ID");
+      });
+  });
+  test("400- returns BAD REQUEST when article ID is invalid", () => {
+    const voteUpdate = { inc_votes: 200 };
+    return request(app)
+      .patch("/api/articles/catsarticle")
+      .send(voteUpdate)
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad Request: Invalid Article ID");
       });
   });
 });

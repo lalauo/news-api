@@ -57,3 +57,20 @@ exports.insertNewCommentToArticle = (username, body, articleId) => {
       return rows[0];
     });
 };
+
+exports.updateVotes = (inc_votes, articleId) => {
+  return db
+    .query(
+      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING*;`,
+      [inc_votes, articleId]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          message: "Not Found: Non-Existent Article ID",
+          status: 404,
+        });
+      }
+      return rows[0];
+    });
+};
