@@ -351,3 +351,24 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("GET /api/users", () => {
+  test("200- returns an array of user objects with the correct properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users[0]).toMatchObject({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+        users.forEach((user) => {
+          expect(typeof user.username).toBe("string"),
+            expect(typeof user.name).toBe("string"),
+            expect(typeof user.avatar_url).toBe("string");
+        });
+      });
+  });
+});
