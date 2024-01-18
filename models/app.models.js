@@ -37,12 +37,6 @@ exports.fetchCommentsByArticleId = (id) => {
       [id]
     )
     .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({
-          message: "Not Found: Non-Existent Article ID",
-          status: 404,
-        });
-      }
       return rows;
     });
 };
