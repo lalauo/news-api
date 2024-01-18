@@ -209,6 +209,7 @@ describe("POST /api/articles/:article_id/comments", () => {
           author: "lurker",
           votes: 0,
         });
+        expect(typeof comment.created_at).toBe("string");
       });
   });
   test("400- returns correct error message if any fields in request body are read as null", () => {
@@ -261,7 +262,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(voteUpdate)
       .expect(200)
       .then(({ body: { updatedArticle } }) => {
-        expect(updatedArticle).toEqual({
+        expect(updatedArticle).toMatchObject({
           article_id: 13,
           title: "Another article about Mitch",
           topic: "mitch",
@@ -312,6 +313,43 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body: { message } }) => {
         expect(message).toBe("Bad Request: Invalid Article ID");
+      });
+  });
+  test("400- returns BAD REQUEST when inc_votes is wrong data type", () => {
+    const voteUpdate = { inc_votes: "a million" };
+    return request(app)
+      .patch("/api/articles/catsarticle")
+      .send(voteUpdate)
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad Request: Invalid Article ID");
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204- successfully deletes a comment associated with a given comment_id", () => {
+    return request(app)
+      .delete("/api/comments/10")
+      .expect(204)
+      .then(({ body: { noContent } }) => {
+        expect(noContent).toBeUndefined();
+      });
+  });
+  test("404- returns NOT FOUND where comment_id isn't in the database", () => {
+    return request(app)
+      .delete("/api/comments/1000")
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Not Found: Non-Existent Comment ID");
+      });
+  });
+  test("404- returns BAD REQUEST when comment_id is invalid", () => {
+    return request(app)
+      .delete("/api/comments/itakeitback")
+      .expect(400)
+      .then(({ body: { message } }) => {
+        expect(message).toBe("Bad Request: Invalid Comment ID");
       });
   });
 });

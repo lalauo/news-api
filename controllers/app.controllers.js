@@ -5,8 +5,10 @@ const {
   fetchCommentsByArticleId,
   insertNewCommentToArticle,
   updateVotes,
+  deleteCommentFromDB,
 } = require("../models/app.models");
 const endpoints = require("../endpoints.json");
+const { validateCommentId } = require("../db/seeds/utils");
 
 exports.getTopics = (request, response, next) => {
   fetchTopics()
@@ -73,6 +75,21 @@ exports.updateArticleById = (request, response, next) => {
   updateVotes(inc_votes, article_id)
     .then((updatedArticle) => {
       response.status(200).send({ updatedArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteCommentById = (request, response, next) => {
+  const { comment_id } = request.params;
+  const validCommentIdQuery = validateCommentId(comment_id);
+  const deleteCommentQuery = deleteCommentFromDB(comment_id);
+
+  Promise.all([deleteCommentQuery, validCommentIdQuery])
+    .then((resArr) => {
+      const noContent = resArr[0];
+      response.status(204).send({ noContent });
     })
     .catch((err) => {
       next(err);
