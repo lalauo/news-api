@@ -34,7 +34,7 @@ exports.checkArticleExists = (id) => {
         });
       }
     });
-}
+};
 
 exports.validateCommentId = (commentId) => {
   if (isNaN(commentId)) {
@@ -53,4 +53,17 @@ exports.validateCommentId = (commentId) => {
           });
         }
       });
+};
+
+exports.checkTopicExists = (topic) => {
+  return db
+    .query(`SELECT * FROM topics WHERE slug = $1;`, [topic])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          message: "Not Found: Non-Existent Topic",
+          status: 404,
+        });
+      }
+    });
 };

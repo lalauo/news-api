@@ -20,14 +20,20 @@ exports.fetchArticleById = (id) => {
     });
 };
 
-exports.fetchArticles = () => {
-  return db
-    .query(
-      `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id GROUP BY articles.article_id ORDER BY created_at DESC;`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+exports.fetchArticles = (topic) => {
+  let queryStr = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id`;
+
+  const paramArray = [];
+
+  if (topic) {
+    queryStr += ` WHERE topic = $1`;
+    paramArray.push(topic);
+  }
+  queryStr += ` GROUP BY articles.article_id ORDER BY created_at DESC;`;
+
+  return db.query(queryStr, paramArray).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.fetchCommentsByArticleId = (id) => {
@@ -71,7 +77,9 @@ exports.updateVotes = (inc_votes, articleId) => {
 
 exports.deleteCommentFromDB = (commentId) => {
   return db
-    .query(`DELETE FROM comments WHERE comment_id = $1;`, [commentId])
+    .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING*;`, [
+      commentId,
+    ])
     .then(({ rows }) => {
       return rows;
     });

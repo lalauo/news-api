@@ -28,8 +28,9 @@ exports.psqlNotNullErrorHandler = (err, request, response, next) => {
   } else next(err);
 };
 
-exports.psqlUnmetConstraintHandler = (err, request, response, next) => {
+exports.psqlUnmetConstraintsHandler = (err, request, response, next) => {
   if (err.code === "23503") {
     response.status(404).send({ message: "Not Found: Unmet Constraints" });
   } else next(err);
 };
+
