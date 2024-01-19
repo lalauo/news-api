@@ -43,7 +43,7 @@ exports.getArticleById = (request, response, next) => {
 
 exports.getArticles = (request, response, next) => {
   const { topic } = request.query;
-  
+
   if (topic) {
     const lookForTopic = checkTopicExists(topic);
     const fetchTopicQuery = fetchArticles(topic);
