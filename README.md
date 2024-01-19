@@ -19,13 +19,13 @@ Using:
 - Add .env.test and .env.development files and connect to databases
 - Database info located in setup.sql file
 - .gitignore these files before pushing to GitHub
-- Install dependencies: npm install
+- Install dependencies: `npm install`
 
 ## Run Project
 
 Locally:
--Seed local database: npm run seed
--Run test: npm run test
+-Seed local database: `npm run seed`
+-Run test: `npm run test`
 (all scripts available in package.json)
 
 [Hosted version](https://news-api-9mot.onrender.com):
