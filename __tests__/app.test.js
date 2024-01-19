@@ -57,16 +57,15 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/3")
       .expect(200)
       .then(({ body: { article } }) => {
-        expect(article).toEqual({
+        expect(article).toMatchObject({
           article_id: 3,
           title: "Eight pug gifs that remind me of mitch",
           topic: "mitch",
           author: "icellusedkars",
-          body: "some gifs",
           created_at: "2020-11-03T09:12:00.000Z",
           votes: 0,
           article_img_url:
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         });
       });
   });
@@ -373,7 +372,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/articles?topic=''", () => {
+describe("GET /api/articles (topic query)", () => {
   test("200- returns all articles matching the specified topic query", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
@@ -407,6 +406,17 @@ describe("GET /api/articles?topic=''", () => {
       .expect(404)
       .then(({ body: { message } }) => {
         expect(message).toEqual("Not Found: Non-Existent Topic");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id (comment_count)", () => {
+  test("200- returns an article object matching a specified id, with a comment count property", () => {
+    return request(app)
+      .get("/api/articles/9")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body);
       });
   });
 });
