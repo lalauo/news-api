@@ -372,3 +372,41 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("GET /api/articles?topic=''", () => {
+  test("200- returns all articles matching the specified topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(12);
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+  test("200- returns empty array if query is valid but there are no matching articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual({ articles: [] });
+      });
+  });
+  test("200- returns all articles if no query given", () => {
+    return request(app)
+      .get("/api/articles?topic=")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+      });
+  });
+  test("404- returns NOT FOUND if query isn't a topic in database", () => {
+    return request(app)
+      .get("/api/articles?topic=ferns")
+      .expect(404)
+      .then(({ body: { message } }) => {
+        expect(message).toEqual("Not Found: Non-Existent Topic");
+      });
+  });
+});

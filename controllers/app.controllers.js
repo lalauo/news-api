@@ -9,7 +9,11 @@ const {
   fetchUsers,
 } = require("../models/app.models");
 const endpoints = require("../endpoints.json");
-const { validateCommentId, checkArticleExists } = require("../db/seeds/utils");
+const {
+  validateCommentId,
+  checkArticleExists,
+  checkTopicExists,
+} = require("../db/seeds/utils");
 
 exports.getTopics = (request, response, next) => {
   fetchTopics()
@@ -37,18 +41,37 @@ exports.getArticleById = (request, response, next) => {
     });
 };
 
-exports.getArticles = (request, response) => {
-  fetchArticles().then((articles) => {
-    response.status(200).send({ articles });
-  });
+exports.getArticles = (request, response, next) => {
+  const { topic } = request.query;
+  
+  if (topic) {
+    const lookForTopic = checkTopicExists(topic);
+    const fetchTopicQuery = fetchArticles(topic);
+
+    Promise.all([fetchTopicQuery, lookForTopic])
+      .then((resArr) => {
+        const articles = resArr[0];
+        response.status(200).send({ articles });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
+  fetchArticles()
+    .then((articles) => {
+      response.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getCommentsByArticleId = (request, response, next) => {
   const { article_id } = request.params;
 
-  const lookForArticleQuery = checkArticleExists(article_id);
+  const lookForArticle = checkArticleExists(article_id);
   const fetchCommentsQuery = fetchCommentsByArticleId(article_id);
-  Promise.all([fetchCommentsQuery, lookForArticleQuery])
+  Promise.all([fetchCommentsQuery, lookForArticle])
     .then((resArr) => {
       const articleComments = resArr[0];
       response.status(200).send({ comments: articleComments });
@@ -100,12 +123,8 @@ exports.deleteCommentById = (request, response, next) => {
     });
 };
 
-exports.getUsers = (request, response, next) => {
-  fetchUsers()
-    .then((users) => {
-      response.status(200).send({ users });
-    })
-    .catch((err) => {
-      next(err);
-    });
+exports.getUsers = (request, response) => {
+  fetchUsers().then((users) => {
+    response.status(200).send({ users });
+  });
 };

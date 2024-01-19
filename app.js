@@ -15,7 +15,7 @@ const {
   customErrorHandler,
   psqlInvalidIntSyntaxHandler,
   psqlNotNullErrorHandler,
-  psqlUnmetConstraintHandler,
+  psqlUnmetConstraintsHandler,
 } = require("./controllers/errors.controllers");
 const app = express();
 app.use(express.json());
@@ -38,6 +38,6 @@ app.all("*", invalidPathHandler);
 app.use(customErrorHandler);
 app.use(psqlInvalidIntSyntaxHandler);
 app.use(psqlNotNullErrorHandler);
-app.use(psqlUnmetConstraintHandler);
+app.use(psqlUnmetConstraintsHandler);
 
 module.exports = app;
