@@ -387,8 +387,8 @@ describe("GET /api/articles (topic query)", () => {
     return request(app)
       .get("/api/articles?topic=paper")
       .expect(200)
-      .then(({ body }) => {
-        expect(body).toEqual({ articles: [] });
+      .then(({ body: { articles } }) => {
+        expect(articles).toEqual([]);
       });
   });
   test("200- returns all articles if no query given", () => {
