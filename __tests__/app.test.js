@@ -65,7 +65,7 @@ describe("GET /api/articles/:article_id", () => {
           created_at: "2020-11-03T09:12:00.000Z",
           votes: 0,
           article_img_url:
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         });
       });
   });
@@ -416,7 +416,33 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
       .get("/api/articles/9")
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
+        expect(body.article).toMatchObject({
+          article_id: 9,
+          title: "They're not exactly dogs, are they?",
+          topic: "mitch",
+          author: "butter_bridge",
+          created_at: "2020-06-06T09:10:00.000Z",
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: "2",
+        });
+      });
+  });
+  test("404- responds with NOT FOUND when given valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/3600")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.message).toBe("Not Found: Non-Existent Article ID");
+      });
+  });
+  test("400- responds with BAD REQUEST when given invalid id", () => {
+    return request(app)
+      .get("/api/articles/MOSTCOMMENTS")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.message).toBe("Bad Request: Invalid Article ID");
       });
   });
 });
