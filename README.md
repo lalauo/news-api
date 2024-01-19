@@ -24,8 +24,8 @@ Using:
 ## Run Project
 
 Locally:
--Seed local database: `npm run seed`
--Run test: `npm run test`
+- Seed local database: `npm run seed`
+- Run test: `npm run test`
 (all scripts available in package.json)
 
 [Hosted version](https://news-api-9mot.onrender.com):
