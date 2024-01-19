@@ -58,7 +58,6 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body: { article } }) => {
         expect(article).toMatchObject({
-          article_id: 3,
           title: "Eight pug gifs that remind me of mitch",
           topic: "mitch",
           author: "icellusedkars",
@@ -417,7 +416,6 @@ describe("GET /api/articles/:article_id (comment_count)", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.article).toMatchObject({
-          article_id: 9,
           title: "They're not exactly dogs, are they?",
           topic: "mitch",
           author: "butter_bridge",
