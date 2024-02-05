@@ -1,4 +1,11 @@
 const express = require("express");
+
+const app = express();
+
+const cors = require("cors");
+app.use(cors());
+app.use(express.json());
+
 const {
   getTopics,
   getEndpoints,
@@ -17,8 +24,6 @@ const {
   psqlNotNullErrorHandler,
   psqlUnmetConstraintsHandler,
 } = require("./controllers/errors.controllers");
-const app = express();
-app.use(express.json());
 
 app.get("/api/topics", getTopics);
 app.get("/api", getEndpoints);
@@ -31,7 +36,7 @@ app.post("/api/articles/:article_id/comments", postNewCommentToArticle);
 
 app.patch("/api/articles/:article_id", updateArticleById);
 
-app.delete("/api/comments/:comment_id",deleteCommentById);
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.all("*", invalidPathHandler);
 
